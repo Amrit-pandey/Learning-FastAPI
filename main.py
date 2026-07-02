@@ -1,26 +1,29 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Request
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 
+templates = Jinja2Templates(directory="templates")
+
 posts: list[dict]= [
   {
-    "userId": 1,
     "id": 1,
     "title": "FastAPI is Awesome",
-    "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
+    "content": "FastAPI is a great framework for python, building highly and scalable web APIs.",
+    "author": "Corey Schafer"
   },
   {
-    "userId": 1,
     "id": 2,
-    "title": "qui est esse",
-    "body": "est rerum tempore vitae\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\nqui aperiam non debitis possimus qui neque nisi nulla"
+    "title": "Python is a Great programming language for biginners",
+    "content": "Python is a Great programming language for biginners, and FastAPI makes it even better.",
+    "author": "Amrit Pandey"
   },
 ]
 
-@app.get("/", response_class = HTMLResponse, )
-def home():
-    return f"<h1>{posts[0]['title']}</h>?"
+@app.get("/", include_in_schema=False)
+@app.get("/posts", include_in_schema=False)
+def home(request: Request):
+    return templates.TemplateResponse(request, "home.html", {"posts": posts, "title": "Home"})
 
 @app.get("/api/posts")
 def get_posts():
