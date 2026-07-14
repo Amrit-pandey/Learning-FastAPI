@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -29,6 +29,10 @@ posts: list[dict]= [
   },
 ]
 # Frontend Navigation Routes
+
+@app.get('/health', include_in_schema=False, response_class=HTMLResponse)
+def health(request: Request):
+    return "<h1>Hello world</h1>"
 
 @app.get("/", include_in_schema=False, name='home')
 @app.get("/posts", include_in_schema=False, name='posts')
