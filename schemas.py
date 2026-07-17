@@ -2,28 +2,27 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, EmailStr
 
 
-class UserBase(BaseModel):
+class BaseUser(BaseModel):
     username: str = Field(min_length=1, max_length=50)
     email: EmailStr = Field(max_length=50)
 
-class UserCreate(UserBase):
+class UserCreate(BaseUser):
     pass
 
-class UserResponse(UserBase):
+class UserResponse(BaseUser):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    image_file = str | None
-    image_path = str
-class BasePost(BaseModel):
+    image_file: str | None
+    image_path: str
+class PostBase(BaseModel):
     title: str = Field(min_length=1, max_length=100)
-    content: str = Field(min_length=1, max_length=100)
-    author: str = Field(min_length=1, max_length=100)
+    content: str = Field(min_length=1)
 
-class CreatePost(BasePost):
+class PostCreate(PostBase):
     user_id: int 
 
-class PostResponse(BasePost):
+class PostResponse(PostBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
