@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+
 
 class User(Base):
     __tablename__ = "users"
@@ -13,9 +14,29 @@ class User(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     username: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String, unique=True, nullable=True)
-    image_file: Mapped[str | None] = mapped_column(String(200), nullable=True, default=None)
+    image_file: Mapped[str | None] = mapped_column(
+        String(200), nullable=True, default=None
+    )
+    is_active: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=False,
+    )
 
-    posts: Mapped[list[Post]] = relationship(back_populates="author")
+    is_deleted: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
+
+    deleted_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
+    posts: Mapped[list[Post]] = relationship(
+        back_populates="author", cascade="all, delete-orphan"
+    )
 
     @property
     def image_path(self) -> str:
@@ -39,5 +60,6 @@ class Post(Base):
         DateTime(timezone=True),
         default=lambda: datetime.now(UTC),
     )
+    is_deleted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     author: Mapped[User] = relationship(back_populates="posts")
