@@ -17,22 +17,6 @@ class User(Base):
     image_file: Mapped[str | None] = mapped_column(
         String(200), nullable=True, default=None
     )
-    is_active: Mapped[bool] = mapped_column(
-        Boolean,
-        default=True,
-        nullable=False,
-    )
-
-    is_deleted: Mapped[bool] = mapped_column(
-        Boolean,
-        default=False,
-        nullable=False,
-    )
-
-    deleted_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True),
-        nullable=True,
-    )
 
     posts: Mapped[list[Post]] = relationship(
         back_populates="author", cascade="all, delete-orphan"
@@ -60,6 +44,5 @@ class Post(Base):
         DateTime(timezone=True),
         default=lambda: datetime.now(UTC),
     )
-    is_deleted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     author: Mapped[User] = relationship(back_populates="posts")
